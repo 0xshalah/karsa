@@ -1,0 +1,26 @@
+{
+  "network": "testnet",
+  "network_passphrase": "Test SDF Network ; September 2015",
+  "rpc_url": "https://soroban-testnet.stellar.org",
+  "horizon_url": "https://horizon-testnet.stellar.org",
+  "deployed_at": null,
+  "deploy_ledger": null,
+  "contract_id": null,
+  "wasm_sha256": null,
+  "xlm_sac": null,
+  "token": {
+    "name": "Karsa Vault",
+    "symbol": "KRS",
+    "decimals": 10,
+    "asset_decimals": 7,
+    "decimals_offset": 3
+  },
+  "virtual_anchor": {
+    "v_assets_stroops": "1000000000",
+    "v_shares_raw": "1000000000000"
+  },
+  "notes": [
+    "contract_id and xlm_sac stay null until the Testnet deployment exists. Fill them in, commit, redeploy the web app.",
+    "Precedence in the web app: localStorage (Change Contract ID) > VITE_VAULT_CONTRACT_ID > this file."
+  ]
+}
