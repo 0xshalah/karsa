@@ -9,3 +9,5 @@ playwright-report/
 target/
 *.mp4
 *.webm
+.vercel/
+.vercel
