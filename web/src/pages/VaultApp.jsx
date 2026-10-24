@@ -121,10 +121,11 @@ export default function VaultApp() {
       <main id="main" className="app-main">
         <div className="wrap app-wrap">
           <p className="notice" role="note" data-testid="app-banner">{t("testnet_note")}</p>
-          <p className="label">{t("eyebrow")}</p>
-          <h1 className="app-h1">{t("title")}</h1>
-          <p className="sub app-sub">{t("sub")}</p>
-
+          <div className="app-header">
+            <p className="label">{t("eyebrow")}</p>
+            <h1 className="app-h1">{t("title")}</h1>
+            <p className="sub app-sub">{t("sub")}</p>
+          </div>
           <div className="stack">
             {!contractId && <Notice tone="warn" title={t("m_none_t")} testid="mode-notice" code="CONTRACT_NOT_CONFIGURED">{t("m_none_d")}</Notice>}
             {contractId && mode === "preview" && <Notice tone="warn" title={t("m_wallet_t")} testid="mode-notice">{t("m_wallet_d")}</Notice>}
@@ -156,37 +157,41 @@ export default function VaultApp() {
             )}
           </div>
 
-          <ContractIdBar t={t} className="app-cid" />
-
-          <VaultStats t={t} state={statsState} mode={statsFromChain ? "live" : "preview"} source={statsSource} onRefresh={contractId ? vs.refresh : null} />
-          <PositionCard t={t} pos={pos} mode={mode} connected={wallet.connected} />
-          <ActionPanel t={t} tab={tab} setTab={setTab} base={base} limits={limits} chain={chain} mode={mode}
-            submitLabel={submitLabel} blocked={Boolean(wrongNet && contractId)} onSubmit={onSubmit} address={live ? wallet.address : null} />
-          {flash && <p className="flash" role="status" data-testid="preview-flash">{flash}</p>}
-
-          {mode === "preview" && (
-            <section className="panel app-card log" data-testid="preview-log">
-              <div className="stats-h">
-                <b>{t("log_title")}</b>
-                <span className="sh-right"><span>{t("log_note")}</span>
-                  <button type="button" className="linkbtn" onClick={resetPreview} data-testid="preview-reset">{t("log_reset")}</button></span>
-              </div>
-              {preview.log.length === 0 ? (
-                <p className="log-empty">{t("log_empty")}</p>
-              ) : (
-                <ol className="log-list">
-                  {preview.log.map((r) => (
-                    <li key={r.n}>
-                      <span className="mono n">#{r.n}</span>
-                      <span className="mono">{r.kind}</span>
-                      <span className="mono num">{xlm(r.assets)} XLM</span>
-                      <span className="mono num">{fmtDec(r.shares, 10)} KRS</span>
-                    </li>
-                  ))}
-                </ol>
+          <div className="app-grid">
+            <div className="app-col-main">
+              <VaultStats t={t} state={statsState} mode={statsFromChain ? "live" : "preview"} source={statsSource} onRefresh={contractId ? vs.refresh : null} />
+              <PositionCard t={t} pos={pos} mode={mode} connected={wallet.connected} />
+              {mode === "preview" && (
+                <section className="panel app-card log" data-testid="preview-log">
+                  <div className="stats-h">
+                    <b>{t("log_title")}</b>
+                    <span className="sh-right"><span>{t("log_note")}</span>
+                      <button type="button" className="linkbtn" onClick={resetPreview} data-testid="preview-reset">{t("log_reset")}</button></span>
+                  </div>
+                  {preview.log.length === 0 ? (
+                    <p className="log-empty">{t("log_empty")}</p>
+                  ) : (
+                    <ol className="log-list">
+                      {preview.log.map((r) => (
+                        <li key={r.n}>
+                          <span className="mono n">#{r.n}</span>
+                          <span className="mono">{r.kind}</span>
+                          <span className="mono num">{xlm(r.assets)} XLM</span>
+                          <span className="mono num">{fmtDec(r.shares, 10)} KRS</span>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </section>
               )}
-            </section>
-          )}
+            </div>
+            <div className="app-col-side">
+              <ActionPanel t={t} tab={tab} setTab={setTab} base={base} limits={limits} chain={chain} mode={mode}
+                submitLabel={submitLabel} blocked={Boolean(wrongNet && contractId)} onSubmit={onSubmit} address={live ? wallet.address : null} />
+              <ContractIdBar t={t} className="app-cid" />
+              {flash && <p className="flash" role="status" data-testid="preview-flash">{flash}</p>}
+            </div>
+          </div>
         </div>
       </main>
       <TxDialog t={t} lang={lang} tx={tx} wallet={wallet} onClose={() => setTx(null)} onRetry={() => runLive(tx.kind, tx.amount)} />
