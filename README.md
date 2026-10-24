@@ -53,13 +53,14 @@ The connected address is passed as `receiver`, `from`/`owner` and `operator`, so
 - Mainnet. The network passphrase is fixed to Testnet and signing is blocked on any other Freighter network.
 - Wallets other than Freighter.
 - Third-party `receiver`, `from`, `owner` or `operator` addresses, and share allowances (`approve` on KRS). The contract supports them; this UI does not expose them.
-- The Soroban contract source is not in this repository yet, and no third-party audit exists.
+- The smart contract is located at `contracts/karsa-vault/` (compiled with Rust Soroban SDK 26.1.1, deployed to Testnet).
 
 ## Layout
 
 ```
+contracts/karsa-vault/      Hardened SEP-0056 Soroban Rust contract with Virtual Liquidity Anchor
 DESIGN.md                  Karsa design tokens (Google DESIGN.md format)
-deployments/testnet.json   network, token block, contract_id (null until deployed)
+deployments/testnet.json   Testnet deployment record (contract ID: CB7ZQKJBG7I7BOUJZAPYZ4RRG57RYOPC4S2YQBP3YBXOD4OWPNXAYJP4)
 docs/decisions.md          choices made while building the app
 vercel.json                SPA rewrite
 web/                       Vite + React app

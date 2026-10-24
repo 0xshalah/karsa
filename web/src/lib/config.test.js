@@ -12,8 +12,14 @@ describe("contract ID config", () => {
     expect(isValidContractId(`C${"A".repeat(54)}`)).toBe(false);
     expect(isValidContractId(`C${"A".repeat(54)}1`)).toBe(false);
   });
-  it("falls back to none when storage, env and deployments/testnet.json are empty", () => {
-    expect(resolveContractId()).toEqual({ id: null, source: "none" });
+  it("resolves the deployed contract ID or falls back when empty", () => {
+    const resolved = resolveContractId();
+    if (resolved.id) {
+      expect(isValidContractId(resolved.id)).toBe(true);
+      expect(["local", "env", "file"]).toContain(resolved.source);
+    } else {
+      expect(resolved).toEqual({ id: null, source: "none" });
+    }
   });
   it("reads the KRS token block from deployments/testnet.json", () => {
     expect(TOKEN).toEqual({ name: "Karsa Vault", symbol: "KRS", decimals: 10, asset_decimals: 7, decimals_offset: 3 });

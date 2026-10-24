@@ -6,3 +6,6 @@ playwright-report/
 .env.*
 !.env.example
 .DS_Store
+target/
+*.mp4
+*.webm
