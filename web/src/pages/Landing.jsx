@@ -133,7 +133,7 @@ const Hero = ({ t, lang }) => (
             <Link className="btn btn-primary" to={withLang("/app", lang)} data-testid="hero-open">
               <span>{t("cta1")}</span><Arrow />
             </Link>
-            <a className="btn btn-ghost" href={LINKS.sep56} target="_blank" rel="noreferrer">{t("cta2")}</a>
+            <a className="btn btn-ghost" href="#infrastructure">{t("cta2")}</a>
           </div>
         </div>
         <StatsPanel t={t} />
@@ -155,6 +155,57 @@ const Marquee = ({ t }) => {
     </>
   );
 };
+const UseCases = ({ t }) => (
+  <section className="s" id="infrastructure">
+    <div className="wrap">
+      <div className="shead rv">
+        <p className="label">{t("b2b_l")}</p>
+        <div>
+          <h2>{t("b2b_t")}</h2>
+          <p className="lead">{t("b2b_lead")}</p>
+        </div>
+      </div>
+      <div className="b2b-grid">
+        <div className="panel b2b-card rv">
+          <div className="b2b-k">{t("b2b_c1_k")}</div>
+          <h3>{t("b2b_c1_t")}</h3>
+          <p>{t("b2b_c1_d")}</p>
+          <div className="b2b-badge">{t("b2b_c1_b")}</div>
+        </div>
+        <div className="panel b2b-card rv">
+          <div className="b2b-k">{t("b2b_c2_k")}</div>
+          <h3>{t("b2b_c2_t")}</h3>
+          <p>{t("b2b_c2_d")}</p>
+          <div className="b2b-badge">{t("b2b_c2_b")}</div>
+        </div>
+        <div className="panel b2b-card rv">
+          <div className="b2b-k">{t("b2b_c3_k")}</div>
+          <h3>{t("b2b_c3_t")}</h3>
+          <p>{t("b2b_c3_d")}</p>
+          <div className="b2b-badge">{t("b2b_c3_b")}</div>
+        </div>
+      </div>
+      <div className="panel dev-quickstart rv">
+        <div className="dq-head">
+          <div className="dq-title">
+            <span className="dot ok">●</span>
+            <b>{t("dev_t")}</b>
+          </div>
+          <span className="mono dq-spec">soroban-sdk = "26.1.1" · SEP-0056 v0.1.2</span>
+        </div>
+        <pre className="dq-code"><code>{`// 1. Initialize vault client in your Soroban smart contract or service
+let vault = KarsaVaultClient::new(&env, &vault_address);
+
+// 2. Execute deposit with protocol-level anti-inflation anchor protection
+let shares = vault.deposit(&assets, &receiver, &from, &operator);
+
+// 3. Preview exact asset return (strictly rounded floor in vault favor)
+let assets_out = vault.preview_redeem(&shares);`}</code></pre>
+      </div>
+    </div>
+  </section>
+);
+
 
 const How = ({ t }) => (
   <section className="s" id="how">
@@ -360,6 +411,7 @@ export default function Landing() {
       <main id="main">
         <Hero t={t} lang={lang} />
         <Marquee t={t} />
+        <UseCases t={t} />
         <How t={t} />
         <Lab t={t} />
         <Mechanics t={t} />
