@@ -1,73 +1,92 @@
 # Karsa Vault (KRS)
 
-A SEP-0056 v0.1.2 tokenized vault on Stellar Soroban Testnet. You deposit native Testnet XLM and receive KRS shares (SEP-0041, 10 decimals). Share math counts a virtual liquidity anchor of 1,000,000,000 stroops (100 XLM) and 10^12 raw shares, so a direct donation into an empty vault cannot wipe out the next deposit.
+Vault tokenized **SEP-0056 v0.1.2** di Stellar Soroban Testnet dengan pengamanan **Virtual Liquidity Anchor**. Pengguna menyetor native Testnet XLM dan menerima share **KRS** (SEP-0041, 10 desimal) yang nilainya mencerminkan porsi kepemilikan pool aset.
 
-This repository holds the web app: the landing page at `/` and the vault app at `/app`.
+> **Testnet only.** Tidak ada dana nyata. Kontrak tidak memiliki admin, upgrade, atau pause keys.
 
-> Testnet only. Testnet XLM has no value. Never send Mainnet funds.
+---
 
-## Prerequisites
+## Kontrak
 
-- Node.js 20.19 or newer (Vite 8), npm 10
-- For signing: the [Freighter](https://www.freighter.app/) browser extension, switched to **Testnet**, with an account funded by Friendbot
+| Item | Nilai |
+|---|---|
+| **Network** | Stellar Testnet (Protocol 29) |
+| **Contract ID** | `CB7ZQKJBG7I7BOUJZAPYZ4RRG57RYOPC4S2YQBP3YBXOD4OWPNXAYJP4` |
+| **Explorer** | https://stellar.expert/explorer/testnet/contract/CB7ZQKJBG7I7BOUJZAPYZ4RRG57RYOPC4S2YQBP3YBXOD4OWPNXAYJP4 |
+| **Underlying Asset** | Native XLM via SAC `CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC` |
+| **Share Decimals** | **10** (Aset 7 + Offset 3) |
+| **WASM SHA-256** | `e8947e736995f4c1c600efe278697a3b92a5422370046be35e1c9a76b3189d8a` |
+| **Deploy Ledger** | `5367709` |
+| **Web App Live** | https://karsa-vault.vercel.app |
 
-## Start
+Detail deployment lengkap tersedia di [`deployments/testnet.json`](./deployments/testnet.json).
+
+---
+
+## Kenapa Virtual Liquidity Anchor
+
+Pada brankas standar tanpa likuiditas awal, donasi langsung dalam jumlah besar dapat memicu *donation attack* (inflasi harga share artifisial), menyebabkan penyetor berikutnya menerima share mendekati 0.
+
+Karsa Vault menanamkan jangkar likuiditas virtual konstan:
+* **Aset Virtual:** $1.000.000.000$ stroops ($100$ XLM virtual reserve).
+* **Share Virtual:** $1.000.000.000.000$ raw shares ($10^{12}$ pada `decimals_offset = 3`).
+
+Saat terjadi donasi masif ke brankas kosong, penyetor berikutnya tetap menerima $> 90\%$ hak sahamnya. Pembuktian matematis teruji di `contracts/karsa-vault/src/test.rs`.
+
+---
+
+## Struktur Repositori
+
+```
+contracts/karsa-vault/     Smart contract Soroban Rust (SEP-56 + SEP-41)
+deployments/testnet.json   Alamat kontrak, WASM hash, dan rekaman deployment
+docs/                      Catatan keputusan arsitektur (ADR)
+PRD.md / TRD.md            Dokumen produk dan teknis resmi
+web/                       Web app Vite + React (landing page + /app console)
+```
+
+---
+
+## Build & Test
+
+Prasyarat: Rust $\ge$ 1.84, target `wasm32v1-none`, Stellar CLI 28.x.
 
 ```bash
-cd web && npm install && npm run dev      # http://localhost:5173
+cd contracts/karsa-vault
+cargo test                      # Menjalankan 7 unit tests (100% pass)
+stellar contract build          # Menghasilkan release WASM (21.250 bytes)
 ```
 
-Other scripts (run inside `web/`):
+Perintah deploy Testnet:
 
-| Command | What it does |
-|---|---|
-| `npm run build` | production build into `web/dist` |
-| `npm run preview` | serves the build on http://localhost:4173 |
-| `npm test` | Vitest unit tests (vault math, rounding, config) |
-| `npm run e2e` | Playwright against `vite preview` (`npx playwright install chromium` first, or set `PW_CHROMIUM=/path/to/chrome`) |
-
-## Set the contract ID
-
-The app looks for a Testnet contract ID in this order and uses the first valid one:
-
-1. **This browser:** `/app` → *Change Contract ID* (stored in `localStorage` under `karsa.contractId`). *Remove override* clears it.
-2. **Build env:** `VITE_VAULT_CONTRACT_ID=C...` in `web/.env.local` or the Vercel project settings.
-3. **Repo file:** `contract_id` in [`deployments/testnet.json`](deployments/testnet.json). Fill in `xlm_sac`, `deployed_at` and `deploy_ledger` at the same time.
-
-An ID must match `^C[A-Z2-7]{55}$` and carry a valid strkey checksum.
-
-With no ID anywhere, `/app` runs as a **local preview**: the same integer math in your browser, labelled "Contract not configured", and nothing is read from or sent to the chain. Once an ID is set:
-
-- vault totals, share price, your KRS balance, `max_withdraw`, `max_redeem` and `convert_to_assets` are read from the contract through Soroban RPC simulation;
-- previews call `preview_deposit`, `preview_mint`, `preview_withdraw`, `preview_redeem` on-chain;
-- with Freighter connected on Testnet, `deposit`, `mint`, `withdraw` and `redeem` are built, simulated with `prepareTransaction`, signed in Freighter, sent, and polled until SUCCESS or FAILED. The receipt links to Stellar Expert.
-
-The connected address is passed as `receiver`, `from`/`owner` and `operator`, so the signer's own authorization covers the call and no `approve` step is needed (see [`docs/decisions.md`](docs/decisions.md)).
-
-## Deploy (Vercel)
-
-`vercel.json` builds `web/` and rewrites every path to `index.html`, so `/app` deep links work.
-
-## Not supported
-
-- Mainnet. The network passphrase is fixed to Testnet and signing is blocked on any other Freighter network.
-- Wallets other than Freighter.
-- Third-party `receiver`, `from`, `owner` or `operator` addresses, and share allowances (`approve` on KRS). The contract supports them; this UI does not expose them.
-- The smart contract is located at `contracts/karsa-vault/` (compiled with Rust Soroban SDK 26.1.1, deployed to Testnet).
-
-## Layout
-
+```bash
+stellar contract deploy \
+  --wasm target/wasm32v1-none/release/karsa_vault.wasm \
+  --source-account deployer --network testnet \
+  -- --name "Karsa Vault" --symbol "KRS" \
+     --asset CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC \
+     --decimals_offset 3
 ```
-contracts/karsa-vault/      Hardened SEP-0056 Soroban Rust contract with Virtual Liquidity Anchor
-DESIGN.md                  Karsa design tokens (Google DESIGN.md format)
-deployments/testnet.json   Testnet deployment record (contract ID: CB7ZQKJBG7I7BOUJZAPYZ4RRG57RYOPC4S2YQBP3YBXOD4OWPNXAYJP4)
-docs/decisions.md          choices made while building the app
-vercel.json                SPA rewrite
-web/                       Vite + React app
-  src/pages/Landing.jsx    /
-  src/pages/VaultApp.jsx   /app
-  src/lib/vault-math.js    BigInt SEP-0056 math with the virtual anchor
-  src/lib/stellar.js       Soroban RPC + Freighter
-  src/lib/config.js        contract ID resolution
-  e2e/                     Playwright tests
+
+---
+
+## Web App
+
+Direktori `web/` memuat antarmuka pengguna berbasis React 19 + Vite 8 dengan layout responsif 2 kolom:
+
+```bash
+cd web
+npm install
+npm run dev           # Jalankan server lokal di http://localhost:5173
+npm test              # Uji unit Vitest (20 tests passing)
+npm run build         # Build produksi ke web/dist
 ```
+
+* **Landing Page:** `/` (Statistik brankas & simulasi interaktif)
+* **Execution Console:** `/app` (Panel 2 kolom: Telemetri posisi & formulir Deposit/Mint/Withdraw/Redeem)
+
+---
+
+## Lisensi
+
+MIT License
