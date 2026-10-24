@@ -18,7 +18,10 @@ export const ContractIdBar = ({ t, className = "" }) => {
   const editBtn = useRef(null);
 
   useEffect(() => {
-    if (editing) input.current?.focus();
+    if (editing) {
+      input.current?.focus();
+      input.current?.select();
+    }
   }, [editing]);
 
   const toggle = () => {
