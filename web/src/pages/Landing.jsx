@@ -68,52 +68,53 @@ const Nav = ({ t, lang }) => {
   );
 };
 
-const StatsPanel = ({ t }) => {
+const StatsPanel = ({ t, lang }) => {
   const { id } = useContract();
   const vs = useVaultState(id);
-  const { net, ping } = useRpcHealth();
+  const { net } = useRpcHealth();
   const live = vs.status === "live" ? vs.data : null;
   const ta = live ? live.totalAssets : 0n;
   const ts = live ? live.totalSupply : 0n;
-  const { vA, vS } = anchor(3);
   const price = sharePriceScaled(ta, ts, 3);
   const pending = vs.status === "loading";
   const dash = "…";
-  let src;
-  if (vs.status === "none") src = t("src_none");
-  else if (vs.status === "loading") src = t("src_loading");
-  else if (vs.status === "error") src = t("src_err", { e: `${vs.error.code}${vs.error.detail ? ` · ${vs.error.detail}` : ""}` });
-  else src = t("src_live", { l: fmtInt(live.ledger || 0) });
 
   return (
-    <div className="panel" id="stats" data-testid="landing-stats" data-state={vs.status}>
-      <div className="stats-h"><b>{t("st_title")}</b><span>{t("st_src")}</span></div>
-      <div className="stat-grid">
-        <div className="stat"><div className="stat-k">{t("st_assets")}</div><div className="stat-v" data-testid="stat-assets">{pending ? dash : xlm(ta)} <small>XLM</small></div></div>
-        <div className="stat"><div className="stat-k">{t("st_supply")}</div><div className="stat-v">{pending ? dash : fmtDec(ts, 10)} <small>KRS</small></div></div>
+    <div className="panel hero-stats" id="stats" data-testid="landing-stats" data-state={vs.status}>
+      <div className="stats-h">
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span className="dot ok">●</span>
+          <b>{t("st_title")}</b>
+        </div>
+        <span className="hero-status-tag">
+          {net.state === "live" ? `Stellar Testnet · #${fmtInt(live?.ledger || net.ledger || 0)}` : "Stellar Testnet"}
+        </span>
+      </div>
+      <div className="stat-grid hero-stat-grid">
+        <div className="stat">
+          <div className="stat-k">{t("st_assets")}</div>
+          <div className="stat-v" data-testid="stat-assets">{pending ? dash : xlm(ta)} <small>XLM</small></div>
+        </div>
+        <div className="stat">
+          <div className="stat-k">{t("st_supply")}</div>
+          <div className="stat-v">{pending ? dash : fmtDec(ts, 10)} <small>KRS</small></div>
+        </div>
         <div className="stat">
           <div className="stat-k">{t("st_price")}</div>
           <div className="stat-v" data-testid="stat-price">{pending ? dash : xlm(price)} <small>{t("st_price_u")}</small></div>
           <div className="stat-r">{t("st_price_sub")}</div>
         </div>
-        <div className="stat"><div className="stat-k">{t("st_dec")}</div><div className="stat-v">10 <small>{t("st_dec_v")}</small></div></div>
-        <div className="stat anchor">
+        <div className="stat">
           <div className="stat-k">{t("st_anchor")}</div>
-          <div className="stat-v">{trimX(vA)} XLM · {fmtDec(vS, 10).replace(/\.0+$/, "")} KRS</div>
-          <div className="stat-r">v_assets = {fmtInt(vA)} · v_shares = {fmtInt(vS)}</div>
+          <div className="stat-v" style={{ fontSize: "18px" }}>100 XLM <small>Virtual</small></div>
+          <div className="stat-r">10^9 stroops · 10^12 shares</div>
         </div>
       </div>
-      <div className="stats-f">
-        <div className="rows">
-          <span role="status" data-testid="net-line">
-            {net.state === "live" && <><span className="ok">●</span> {t("net_live", { ms: net.ms, l: fmtInt(net.ledger) })}</>}
-            {net.state === "down" && <><span className="bad">●</span> {t("net_down", { e: net.err })}</>}
-            {net.state === "checking" && t("net_checking")}
-          </span>
-          <span data-testid="wallet-line">{t("wallet_yes")}</span>
-          <span data-testid="source-line" className={vs.status === "error" ? "bad" : vs.status === "live" ? "ok" : ""}>{src}</span>
+      <div className="hero-stats-footer">
+        <div className="hsf-row">
+          <span className="hsf-shield">🛡️ Anti-Inflation Anchor Protected</span>
+          <Link className="hsf-link" to={withLang("/app", lang)}>{t("nav_cta")} →</Link>
         </div>
-        <button type="button" className="linkbtn" onClick={() => { ping(); vs.refresh(); }}>{t("retry")}</button>
       </div>
     </div>
   );
@@ -136,9 +137,8 @@ const Hero = ({ t, lang }) => (
             <a className="btn btn-ghost" href="#infrastructure">{t("cta2")}</a>
           </div>
         </div>
-        <StatsPanel t={t} />
+        <StatsPanel t={t} lang={lang} />
       </div>
-      <ContractIdBar t={t} />
     </div>
   </section>
 );
@@ -185,6 +185,7 @@ const UseCases = ({ t }) => (
           <div className="b2b-badge">{t("b2b_c3_b")}</div>
         </div>
       </div>
+      <ContractIdBar t={t} className="b2b-cid" />
       <div className="panel dev-quickstart rv">
         <div className="dq-head">
           <div className="dq-title">

@@ -189,6 +189,27 @@ export default function VaultApp() {
               <ActionPanel t={t} tab={tab} setTab={setTab} base={base} limits={limits} chain={chain} mode={mode}
                 submitLabel={submitLabel} blocked={Boolean(wrongNet && contractId)} onSubmit={onSubmit} address={live ? wallet.address : null} />
               <ContractIdBar t={t} className="app-cid" />
+              <section className="panel app-card specs" data-testid="protocol-specs">
+                <div className="stats-h"><b>{t("spec_title")}</b></div>
+                <div className="pos-body">
+                  <div className="pos-row">
+                    <span className="pk">{t("spec_standard")}</span>
+                    <span className="pv" style={{ fontSize: "14px" }}>SEP-0056 v0.1.2 · SEP-0041</span>
+                  </div>
+                  <div className="pos-row">
+                    <span className="pk">{t("spec_geometry")}</span>
+                    <span className="pv" style={{ fontSize: "14px" }}>7 (asset) + 3 (offset) = 10</span>
+                  </div>
+                  <div className="pos-row">
+                    <span className="pk">{t("spec_anchor")}</span>
+                    <span className="pv" style={{ fontSize: "14px" }}>10^9 stroops <small>(100 XLM)</small></span>
+                  </div>
+                  <div className="pos-row">
+                    <span className="pk">{t("spec_auth")}</span>
+                    <span className="pv" style={{ fontSize: "14px" }}>Operator Authorized</span>
+                  </div>
+                </div>
+              </section>
               {flash && <p className="flash" role="status" data-testid="preview-flash">{flash}</p>}
             </div>
           </div>
