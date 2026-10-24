@@ -1,3 +1,4 @@
+import { Layers } from "lucide-react";
 import { fmtDec, xlm } from "../../lib/format";
 
 const Row = ({ k, v, unit, testid }) => (
@@ -9,7 +10,10 @@ const Row = ({ k, v, unit, testid }) => (
 
 export const PositionCard = ({ t, pos, mode, connected, onFund }) => (
   <section className="panel app-card pos" data-testid="position-card">
-    <div className="stats-h"><b>{mode === "live" ? t("pos_title") : t("pos_preview_title")}</b></div>
+    <div className="stats-h" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <Layers size={16} color="var(--accent)" />
+      <b>{mode === "live" ? t("pos_title") : t("pos_preview_title")}</b>
+    </div>
     <div className="pos-body">
       {pos ? (
         <>

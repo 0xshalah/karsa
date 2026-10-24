@@ -8,6 +8,7 @@ import { useRpcHealth, useVaultState } from "../hooks/useVaultState";
 import { anchor, donationLab, sharePriceScaled } from "../lib/vault-math";
 import { fmtDec, fmtInt, fmtPct, pctWidth, xlm } from "../lib/format";
 import { Arrow, Mark } from "../components/Brand";
+import { Building2, Layers, ShieldCheck, Code } from "lucide-react";
 import { LangToggle } from "../components/LangToggle";
 import { ContractIdBar } from "../components/ContractIdBar";
 
@@ -112,7 +113,7 @@ const StatsPanel = ({ t, lang }) => {
       </div>
       <div className="hero-stats-footer">
         <div className="hsf-row">
-          <span className="hsf-shield">🛡️ Anti-Inflation Anchor Protected</span>
+          <span className="hsf-shield" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><ShieldCheck size={14} color="var(--verified)" /><span>Anti-Inflation Anchor Protected</span></span>
           <Link className="hsf-link" to={withLang("/app", lang)}>{t("nav_cta")} →</Link>
         </div>
       </div>
@@ -167,19 +168,28 @@ const UseCases = ({ t }) => (
       </div>
       <div className="b2b-grid">
         <div className="panel b2b-card rv">
-          <div className="b2b-k">{t("b2b_c1_k")}</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div className="b2b-k" style={{ margin: 0 }}>{t("b2b_c1_k")}</div>
+            <Building2 size={20} color="var(--accent)" />
+          </div>
           <h3>{t("b2b_c1_t")}</h3>
           <p>{t("b2b_c1_d")}</p>
           <div className="b2b-badge">{t("b2b_c1_b")}</div>
         </div>
         <div className="panel b2b-card rv">
-          <div className="b2b-k">{t("b2b_c2_k")}</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div className="b2b-k" style={{ margin: 0 }}>{t("b2b_c2_k")}</div>
+            <Layers size={20} color="var(--accent)" />
+          </div>
           <h3>{t("b2b_c2_t")}</h3>
           <p>{t("b2b_c2_d")}</p>
           <div className="b2b-badge">{t("b2b_c2_b")}</div>
         </div>
         <div className="panel b2b-card rv">
-          <div className="b2b-k">{t("b2b_c3_k")}</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div className="b2b-k" style={{ margin: 0 }}>{t("b2b_c3_k")}</div>
+            <ShieldCheck size={20} color="var(--accent)" />
+          </div>
           <h3>{t("b2b_c3_t")}</h3>
           <p>{t("b2b_c3_d")}</p>
           <div className="b2b-badge">{t("b2b_c3_b")}</div>
@@ -189,7 +199,7 @@ const UseCases = ({ t }) => (
       <div className="panel dev-quickstart rv">
         <div className="dq-head">
           <div className="dq-title">
-            <span className="dot ok">●</span>
+            <Code size={15} color="var(--verified)" />
             <b>{t("dev_t")}</b>
           </div>
           <span className="mono dq-spec">soroban-sdk = "26.1.1" · SEP-0056 v0.1.2</span>

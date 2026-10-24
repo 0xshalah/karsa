@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Copy, Check, ExternalLink, Edit2 } from "lucide-react";
 import { LINKS, isValidContractId } from "../lib/config";
 import { useContract } from "../lib/contract";
 
@@ -69,17 +70,20 @@ export const ContractIdBar = ({ t, className = "" }) => {
       <span className={`v ${id ? "" : "unset"}`} data-testid="contract-id">{id || t("cid_unset")}</span>
       {id && <span className="src">{t(`cid_src_${source}`)}</span>}
       {id && (
-        <button type="button" className="linkbtn" onClick={copy} data-testid="contract-copy">
-          {copied ? t("cid_copied") : t("cid_copy")}
+        <button type="button" className="linkbtn" onClick={copy} data-testid="contract-copy" style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+          {copied ? <Check size={13} color="var(--verified)" /> : <Copy size={13} />}
+          <span>{copied ? t("cid_copied") : t("cid_copy")}</span>
         </button>
       )}
       {id && (
-        <a className="linkbtn" href={LINKS.explorer(id)} target="_blank" rel="noreferrer" data-testid="contract-explorer">
-          {t("cid_explorer")}
+        <a className="linkbtn" href={LINKS.explorer(id)} target="_blank" rel="noreferrer" data-testid="contract-explorer" style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+          <span>{t("cid_explorer")}</span>
+          <ExternalLink size={12} />
         </a>
       )}
-      <button ref={editBtn} type="button" className="linkbtn" aria-expanded={editing} aria-controls="cidForm" onClick={toggle} data-testid="contract-change">
-        {t(id ? "cid_change" : "cid_edit")}
+      <button ref={editBtn} type="button" className="linkbtn" aria-expanded={editing} aria-controls="cidForm" onClick={toggle} data-testid="contract-change" style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+        <Edit2 size={12} />
+        <span>{t(id ? "cid_change" : "cid_edit")}</span>
       </button>
       <form className="cid-form" id="cidForm" noValidate onSubmit={submit}>
         <label className="sr" htmlFor="cidInput">{t("cid_input_l")}</label>
